@@ -52,7 +52,15 @@ def main(args):
 		obs_shape=env.observation_space.shape,
 		action_shape=env.action_space.shape,
 		capacity=args.train_steps,
-		batch_size=args.batch_size
+		batch_size=args.batch_size,
+		neural_aug_type=args.neural_aug_type,
+		neural_aug_skip_prob=args.neural_aug_skip_prob,
+		neural_aug_average_over=args.neural_aug_average_over,
+		neural_aug_start_iter=args.neural_aug_start_iter,
+		neural_aug_warmup_iters=args.neural_aug_warmup_iters,
+		save_augpics=args.save_augpics,
+		save_augpics_freq=args.save_augpics_freq, 
+		save_augpics_dir=args.work_dir
 	)
 	cropped_obs_shape = (3*args.frame_stack, 84, 84)
 	agent = make_agent(

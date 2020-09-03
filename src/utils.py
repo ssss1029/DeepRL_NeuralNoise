@@ -3,6 +3,8 @@ import numpy as np
 import os
 import random
 
+from env.neural_augs.utils import call_augfn_torch_batched
+from env.neural_augs.Res2Net import Res2Net
 
 class eval_mode(object):
     def __init__(self, *models):
@@ -45,7 +47,11 @@ def make_dir(dir_path):
 
 class ReplayBuffer(object):
     """Buffer to store environment transitions"""
-    def __init__(self, obs_shape, action_shape, capacity, batch_size):
+    def __init__(self, obs_shape, action_shape, capacity, batch_size, 
+        neural_aug_type, neural_aug_skip_prob, neural_aug_average_over, 
+        neural_aug_start_iter, neural_aug_warmup_iters, 
+        save_augpics, save_augpics_freq, save_augpics_dir
+    ):
         self.capacity = capacity
         self.batch_size = batch_size
 
@@ -58,17 +64,86 @@ class ReplayBuffer(object):
         self.rewards = np.empty((capacity, 1), dtype=np.float32)
         self.not_dones = np.empty((capacity, 1), dtype=np.float32)
 
+        # Neural Augmentations
+        self.neural_aug_type = neural_aug_type
+        self.neural_aug_skip_prob = neural_aug_skip_prob
+        self.neural_aug_average_over = neural_aug_average_over
+        assert self.capacity % self.neural_aug_average_over == 0
+        self.neural_aug_start_iter = neural_aug_start_iter
+        self.neural_aug_warmup_iters = neural_aug_warmup_iters
+
+        self.save_augpics = save_augpics
+        self.save_augpics_freq = save_augpics_freq 
+        self.save_augpics_dir = save_augpics_dir
+
+        self.noise2net_MAX_EPS = 0.15 # TODO: Add command line arg
+        self.noise2net = Res2Net(epsilon=self.noise2net_MAX_EPS, batch_size=3).train().cuda() # Multiply by 3 because frame_stack
+
         self.idx = 0
         self.full = False
 
     def add(self, obs, action, reward, next_obs, done):
-        np.copyto(self.obses[self.idx], obs)
-        np.copyto(self.actions[self.idx], action)
-        np.copyto(self.rewards[self.idx], reward)
-        np.copyto(self.next_obses[self.idx], next_obs)
-        np.copyto(self.not_dones[self.idx], not done)
+        
+        if self.neural_aug_average_over != 1:
+            print("WARNING. This might screw things up")
 
-        self.idx = (self.idx + 1) % self.capacity
+        if self.neural_aug_type not in {'noise2net', 'none'}:
+            raise NotImplementedError()
+        
+        # Default Values
+        obses = [obs for _ in range(self.neural_aug_average_over)]
+        next_obses = [next_obs for _ in range(self.neural_aug_average_over)]
+
+        if self.idx > self.neural_aug_start_iter:
+            if self.neural_aug_type == 'noise2net' and random.random() > self.neural_aug_skip_prob:
+                # Apply noise2net
+                self.noise2net.reload_parameters()
+                
+                # Linear epsilon warmup
+                warmup_frac = (self.idx - self.neural_aug_start_iter)/self.neural_aug_warmup_iters
+                if warmup_frac < 1.0:
+                    eps = self.noise2net_MAX_EPS * warmup_frac
+                else:
+                    eps = random.uniform(0, self.noise2net_MAX_EPS)
+                self.noise2net.set_epsilon(eps)
+
+                obses = (call_augfn_torch_batched(
+                    torch.as_tensor(obs).float().cuda().unsqueeze(0) / 255.0, 
+                    self.noise2net.forward, 
+                    copies=self.neural_aug_average_over
+                ).cpu().numpy() * 255.0).astype(np.uint8)
+                next_obses = (call_augfn_torch_batched(
+                    torch.as_tensor(next_obs).float().cuda().unsqueeze(0) / 255.0, 
+                    self.noise2net.forward, 
+                    copies=self.neural_aug_average_over
+                ).cpu().numpy() * 255.0).astype(np.uint8)
+
+        # Fix dimensions of actions, rewards, and dones
+        actions = [action for _ in range(self.neural_aug_average_over)]
+        rewards = [reward for _ in range(self.neural_aug_average_over)]
+        dones = [done for _ in range(self.neural_aug_average_over)]
+
+        if self.save_augpics or self.idx % self.save_augpics_freq == 0:
+            # Save and exit
+            import torchvision
+            O = torch.as_tensor(obses).float().detach().cpu().reshape((3, 3, 100, 100))
+            N = torch.as_tensor(next_obses).float().detach().cpu().reshape((3, 3, 100, 100))
+            torchvision.utils.save_image(O / 255.0, os.path.join(self.save_augpics_dir, f"augmented_obs_{self.idx}.png"))
+            torchvision.utils.save_image(N / 255.0, os.path.join(self.save_augpics_dir, f"augmented_next_obs_{self.idx}.png"))
+
+            if self.save_augpics:
+                # Legacy flag
+                print(actions)
+                exit()
+
+        for i, (O, A, R, N, D) in enumerate(zip(obses, actions, rewards, next_obses, dones)):
+            np.copyto(self.obses[self.idx + i], O)
+            np.copyto(self.actions[self.idx + i], A)
+            np.copyto(self.rewards[self.idx + i], R)
+            np.copyto(self.next_obses[self.idx + i], N)
+            np.copyto(self.not_dones[self.idx + i], not D)
+
+        self.idx = (self.idx + self.neural_aug_average_over) % self.capacity
         self.full = self.full or self.idx == 0
 
     def sample(self):

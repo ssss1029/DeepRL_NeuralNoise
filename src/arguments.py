@@ -42,6 +42,17 @@ def parse_args():
 	parser.add_argument('--encoder_lr', default=1e-3, type=float)
 	parser.add_argument('--encoder_tau', default=0.05, type=float)
 
+	# Neural Augmentations
+	parser.add_argument('--neural_aug_type', default='none', choices=['none', 'noise2net', 'randconv'])
+	parser.add_argument('--neural_aug_skip_prob', default=0.0, type=float)
+	parser.add_argument('--neural_aug_average_over', default=1, type=int)
+	parser.add_argument('--neural_aug_start_iter', default=50000, type=int)
+	parser.add_argument('--neural_aug_warmup_iters', default=50000, type=int)
+	parser.add_argument('--save_augpics', default=False, action='store_true') # Save them and exit ONCE
+	parser.add_argument('--save_augpics_freq', default=1000, type=int) # Used during training
+	# Self-Supervision for Neural Augs
+	parser.add_argument('--use_feature_matching', default=False, action='store_true')
+
 	# self-supervision
 	parser.add_argument('--use_rot', default=False, action='store_true') # rotation prediction
 	parser.add_argument('--use_inv', default=False, action='store_true') # inverse dynamics model
