@@ -27,68 +27,72 @@ class Config:
         #### SHADOWFAX
         #####################################################################################
 
-        # "finger_spin_noSS_noise2net_startIter50k_warmupIter50k_seed0" : "python3 src/train.py \
+        # IDM Model.
+        # "finger_spin_noSS_noise2net_startIter50k_warmupIter50k_IDM_seed0" : "python3 src/train.py \
         #     --domain_name finger \
         #     --task_name spin \
         #     --action_repeat 2 \
         #     --mode train \
         #     --num_shared_layers 8 \
         #     --seed 0 \
-        #     --work_dir logs/finger_spin/noSS/noise2net_startIter50k_warmupIter50k_seed0 \
+        #     --work_dir logs/finger_spin/inv/noise2net_startIter50k_warmupIter50k_IDM_seed0 \
         #     --save_model \
+        #     --use_inv \
         #     --neural_aug_start_iter=50000 \
         #     --neural_aug_warmup_iters=50000 \
         #     --save_augpics_freq=1000 \
         #     --neural_aug_type=noise2net",
 
-        # IDM Model.
-        "finger_spin_noSS_noise2net_startIter50k_warmupIter50k_IDM_seed0" : "python3 src/train.py \
-            --domain_name finger \
-            --task_name spin \
-            --action_repeat 2 \
-            --mode train \
-            --num_shared_layers 8 \
-            --seed 0 \
-            --work_dir logs/finger_spin/inv/noise2net_startIter50k_warmupIter50k_IDM_seed0 \
-            --save_model \
-            --use_inv \
-            --neural_aug_start_iter=50000 \
-            --neural_aug_warmup_iters=50000 \
-            --save_augpics_freq=1000 \
-            --neural_aug_type=noise2net",
-
         #####################################################################################
         #### SMAUG
         #####################################################################################
 
-        # "finger_spin_noSS_noise2net_startIter150k_warmupIter150k_seed0" : "python3 src/train.py \
-        #     --domain_name finger \
-        #     --task_name spin \
-        #     --action_repeat 2 \
-        #     --mode train \
-        #     --num_shared_layers 8 \
-        #     --seed 0 \
-        #     --work_dir logs/finger_spin/noSS/noise2net_startIter150k_warmupIter150k_seed0 \
-        #     --save_model \
-        #     --neural_aug_start_iter=150000 \
-        #     --neural_aug_warmup_iters=150000 \
-        #     --save_augpics_freq=1000 \
-        #     --neural_aug_type=noise2net",
+        "walker_stand_noSS_noise2net_startIter0_warmupIter50k_seed0" : "python3 src/train.py \
+            --domain_name walker \
+            --task_name stand \
+            --action_repeat 4 \
+            --mode train \
+            --num_shared_layers 8 \
+            --seed 0 \
+            --work_dir logs/walker_stand/noSS/noise2net_startIter0_warmupIter50k_seed0 \
+            --save_model \
+            --neural_aug_start_iter=0 \
+            --neural_aug_warmup_iters=50000 \
+            --save_augpics_freq=5000 \
+            --neural_aug_type=noise2net",
 
-        # "finger_spin_noSS_noise2net_startIter0_warmupIter50k_seed0" : "python3 src/train.py \
-        #     --domain_name finger \
-        #     --task_name spin \
-        #     --action_repeat 2 \
-        #     --mode train \
-        #     --num_shared_layers 8 \
-        #     --seed 0 \
-        #     --work_dir logs/finger_spin/noSS/noise2net_startIter0_warmupIter50k_seed0 \
-        #     --save_model \
-        #     --neural_aug_start_iter=0 \
-        #     --neural_aug_warmup_iters=50000 \
-        #     --save_augpics_freq=1000 \
-        #     --neural_aug_type=noise2net",
+        "finger_turn_easy_noSS_noise2net_startIter0_warmupIter50k_seed0" : "python3 src/train.py \
+            --domain_name finger \
+            --task_name turn_easy \
+            --action_repeat 2 \
+            --mode train \
+            --num_shared_layers 8 \
+            --seed 0 \
+            --work_dir logs/finger_turn_easy/noSS/noise2net_startIter0_warmupIter50k_seed0 \
+            --save_model \
+            --neural_aug_start_iter=0 \
+            --neural_aug_warmup_iters=50000 \
+            --save_augpics_freq=5000 \
+            --neural_aug_type=noise2net",
 
+        # Making neural_aug_start_iter 50k becuase of intution lol
+        "cheetah_run_noSS_noise2net_startIter50k_warmupIter50k_seed0" : "python3 src/train.py \
+            --domain_name cheetah \
+            --task_name run \
+            --action_repeat 4 \
+            --mode train \
+            --num_shared_layers 8 \
+            --seed 0 \
+            --work_dir logs/cheetah_run/noSS/noise2net_startIter50k_warmupIter50k_seed0 \
+            --save_model \
+            --critic_lr 3e-4 \
+            --actor_lr 3e-4 \
+            --encoder_lr 3e-4 \
+            --ss_lr 3e-4 \
+            --neural_aug_start_iter=50000 \
+            --neural_aug_warmup_iters=50000 \
+            --save_augpics_freq=5000 \
+            --neural_aug_type=noise2net",
     }
 
     # Time to wait between putting jobs on GPUs (in seconds). This is useful because it might take time 
