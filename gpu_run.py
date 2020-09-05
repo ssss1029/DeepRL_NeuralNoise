@@ -56,13 +56,13 @@ class Config:
             --save_model \
             --neural_aug_start_iter=0 \
             --neural_aug_warmup_iters=50000 \
-            --save_augpics_freq=5000 \
+            --save_augpics_freq=10101 \
             --neural_aug_type=noise2net",
 
         "finger_spin_noSS_noise2net_startIter0_warmupIter50k_seed1" : "python3 src/train.py \
             --domain_name finger \
             --task_name spin \
-            --action_repeat 4 \
+            --action_repeat 2 \
             --mode train \
             --num_shared_layers 8 \
             --seed 1 \
@@ -70,10 +70,10 @@ class Config:
             --save_model \
             --neural_aug_start_iter=0 \
             --neural_aug_warmup_iters=50000 \
-            --save_augpics_freq=5000 \
+            --save_augpics_freq=10101 \
             --neural_aug_type=noise2net",
 
-        "walker_walk_noSS_noise2net_startIter0_warmupIter50k_seed1" : "python3 src/train.py \
+        "walker_stand_noSS_noise2net_startIter0_warmupIter50k_seed1" : "python3 src/train.py \
             --domain_name walker \
             --task_name stand \
             --action_repeat 4 \
@@ -84,7 +84,7 @@ class Config:
             --save_model \
             --neural_aug_start_iter=0 \
             --neural_aug_warmup_iters=50000 \
-            --save_augpics_freq=5000 \
+            --save_augpics_freq=10101 \
             --neural_aug_type=noise2net",
     }
 
