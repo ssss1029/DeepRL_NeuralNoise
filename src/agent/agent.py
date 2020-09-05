@@ -39,6 +39,7 @@ def make_agent(obs_shape, action_shape, args):
         num_shared_layers=args.num_shared_layers,
         num_filters=args.num_filters,
         curl_latent_dim=args.curl_latent_dim,
+        use_feature_matching=args.use_feature_matching,
     )
 
 
@@ -237,6 +238,11 @@ class Critic(nn.Module):
         q2 = self.Q2(obs, action)
 
         return q1, q2
+    
+    def feature_matching_loss(self, obs, obs_fm):
+        h1 = self.encoder(obs, detach=False)
+        h2 = self.encoder(obs_fm, detach=False)
+        return torch.mean((h1 - h2) ** 2)
 
 
 class SacSSAgent(object):
@@ -274,6 +280,7 @@ class SacSSAgent(object):
         num_shared_layers=4,
         num_filters=32,
         curl_latent_dim=128,
+        use_feature_matching=False
     ):
         self.discount = discount
         self.critic_tau = critic_tau
@@ -285,6 +292,7 @@ class SacSSAgent(object):
         self.use_inv = use_inv
         self.use_curl = use_curl
         self.curl_latent_dim = curl_latent_dim
+        self.use_feature_matching = use_feature_matching
 
         assert num_layers >= num_shared_layers, 'num shared layers cannot exceed total amount'
 
@@ -415,7 +423,7 @@ class SacSSAgent(object):
             mu, pi, _, _ = self.actor(obs, compute_log_pi=False)
             return pi.cpu().data.numpy().flatten()
 
-    def update_critic(self, obs, action, reward, next_obs, not_done, L, step):
+    def update_critic(self, obs, obs_fm, action, reward, next_obs, not_done, L, step):
         with torch.no_grad():
             _, policy_action, log_pi, _ = self.actor(next_obs)
             target_Q1, target_Q2 = self.critic_target(next_obs, policy_action)
@@ -427,7 +435,14 @@ class SacSSAgent(object):
         current_Q1, current_Q2 = self.critic(obs, action)
         critic_loss = F.mse_loss(current_Q1,
                                  target_Q) + F.mse_loss(current_Q2, target_Q)
+        
         L.log('train_critic/loss', critic_loss, step)
+
+        if self.use_feature_matching:
+            fm_loss = self.critic.feature_matching_loss(obs, obs_fm)
+            # print(critic_loss, fm_loss)
+            L.log('train_critic/fm_loss', fm_loss, step)
+            critic_loss = critic_loss + 0.75 * fm_loss
 
         # Optimize the critic
         self.critic_optimizer.zero_grad()
@@ -538,9 +553,14 @@ class SacSSAgent(object):
         else:
             obs, action, reward, next_obs, not_done = replay_buffer.sample()
         
+        if self.use_feature_matching:
+            obs, obs_fm = obs
+        else:
+            obs, obs_fm = obs, None
+
         L.log('train/batch_reward', reward.mean(), step)
 
-        self.update_critic(obs, action, reward, next_obs, not_done, L, step)
+        self.update_critic(obs, obs_fm, action, reward, next_obs, not_done, L, step)
 
         if step % self.actor_update_freq == 0:
             self.update_actor_and_alpha(obs, L, step)

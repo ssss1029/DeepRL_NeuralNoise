@@ -50,10 +50,11 @@ class ReplayBuffer(object):
     def __init__(self, obs_shape, action_shape, capacity, batch_size, 
         neural_aug_type, neural_aug_skip_prob, neural_aug_average_over, 
         neural_aug_start_iter, neural_aug_warmup_iters, 
-        save_augpics, save_augpics_freq, save_augpics_dir
+        save_augpics, save_augpics_freq, save_augpics_dir, use_feature_matching
     ):
         self.capacity = capacity
         self.batch_size = batch_size
+        self.use_feature_matching = use_feature_matching
 
         # the proprioceptive obs is stored as float32, pixels obs as uint8
         obs_dtype = np.float32 if len(obs_shape) == 1 else np.uint8
@@ -63,6 +64,8 @@ class ReplayBuffer(object):
         self.actions = np.empty((capacity, *action_shape), dtype=np.float32)
         self.rewards = np.empty((capacity, 1), dtype=np.float32)
         self.not_dones = np.empty((capacity, 1), dtype=np.float32)
+        if self.use_feature_matching:
+            self.obses_FM = np.empty((capacity, *obs_shape), dtype=obs_dtype)
 
         # Neural Augmentations
         self.neural_aug_type = neural_aug_type
@@ -86,6 +89,7 @@ class ReplayBuffer(object):
         
         if self.neural_aug_average_over != 1:
             print("WARNING. This might screw things up")
+            exit()
 
         if self.neural_aug_type not in {'noise2net', 'none'}:
             raise NotImplementedError()
@@ -118,6 +122,16 @@ class ReplayBuffer(object):
                     copies=self.neural_aug_average_over
                 ).cpu().numpy() * 255.0).astype(np.uint8)
 
+        if self.use_feature_matching:
+            # Always have an FM version of the obses
+            obses_FM = (
+                call_augfn_torch_batched(
+                    torch.as_tensor(obs).float().cuda().unsqueeze(0) / 255.0, 
+                    self.noise2net.forward, 
+                    copies=self.neural_aug_average_over
+                ).cpu().numpy() * 255.0
+            ).astype(np.uint8)
+
         # Fix dimensions of actions, rewards, and dones
         actions = [action for _ in range(self.neural_aug_average_over)]
         rewards = [reward for _ in range(self.neural_aug_average_over)]
@@ -136,12 +150,21 @@ class ReplayBuffer(object):
                 print(actions)
                 exit()
 
-        for i, (O, A, R, N, D) in enumerate(zip(obses, actions, rewards, next_obses, dones)):
-            np.copyto(self.obses[self.idx + i], O)
-            np.copyto(self.actions[self.idx + i], A)
-            np.copyto(self.rewards[self.idx + i], R)
-            np.copyto(self.next_obses[self.idx + i], N)
-            np.copyto(self.not_dones[self.idx + i], not D)
+        if self.use_feature_matching:
+            for i, (O, A, R, N, D, OFM) in enumerate(zip(obses, actions, rewards, next_obses, dones, obses_FM)):
+                np.copyto(self.obses[self.idx + i], O)
+                np.copyto(self.actions[self.idx + i], A)
+                np.copyto(self.rewards[self.idx + i], R)
+                np.copyto(self.next_obses[self.idx + i], N)
+                np.copyto(self.not_dones[self.idx + i], not D)
+                np.copyto(self.obses_FM[self.idx + i], OFM)
+        else:
+            for i, (O, A, R, N, D) in enumerate(zip(obses, actions, rewards, next_obses, dones)):
+                np.copyto(self.obses[self.idx + i], O)
+                np.copyto(self.actions[self.idx + i], A)
+                np.copyto(self.rewards[self.idx + i], R)
+                np.copyto(self.next_obses[self.idx + i], N)
+                np.copyto(self.not_dones[self.idx + i], not D)
 
         self.idx = (self.idx + self.neural_aug_average_over) % self.capacity
         self.full = self.full or self.idx == 0
@@ -159,6 +182,9 @@ class ReplayBuffer(object):
 
         obses = random_crop(obses)
         next_obses = random_crop(next_obses)
+
+        if self.use_feature_matching:
+            obses = (obses, torch.as_tensor(self.obses_FM[idxs]).float().cuda())
 
         return obses, actions, rewards, next_obses, not_dones
 
@@ -181,6 +207,9 @@ class ReplayBuffer(object):
         
         curl_kwargs = dict(obs_anchor=obses, obs_pos=pos,
                           time_anchor=None, time_pos=None)
+
+        if self.use_feature_matching:
+            obses = (obses, torch.as_tensor(self.obses_FM[idxs]).float().cuda())
 
         return obses, actions, rewards, next_obses, not_dones, curl_kwargs
 

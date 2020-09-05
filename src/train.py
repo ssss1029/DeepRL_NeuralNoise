@@ -51,7 +51,7 @@ def main(args):
 	replay_buffer = utils.ReplayBuffer(
 		obs_shape=env.observation_space.shape,
 		action_shape=env.action_space.shape,
-		capacity=args.train_steps,
+		capacity=args.train_steps // 3 * 2 if args.use_feature_matching else args.train_steps,
 		batch_size=args.batch_size,
 		neural_aug_type=args.neural_aug_type,
 		neural_aug_skip_prob=args.neural_aug_skip_prob,
@@ -60,13 +60,14 @@ def main(args):
 		neural_aug_warmup_iters=args.neural_aug_warmup_iters,
 		save_augpics=args.save_augpics,
 		save_augpics_freq=args.save_augpics_freq, 
-		save_augpics_dir=args.work_dir
+		save_augpics_dir=args.work_dir,
+		use_feature_matching=args.use_feature_matching
 	)
 	cropped_obs_shape = (3*args.frame_stack, 84, 84)
 	agent = make_agent(
 		obs_shape=cropped_obs_shape,
 		action_shape=env.action_space.shape,
-		args=args
+		args=args,
 	)
 
 	L = Logger(args.work_dir, use_tb=False)

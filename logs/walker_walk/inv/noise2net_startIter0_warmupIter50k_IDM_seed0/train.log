@@ -1,0 +1,5 @@
+{"episode_reward": 0.0, "episode": 1.0, "duration": 21.979520320892334, "step": 250}
+{"episode_reward": 72.83316014594917, "episode": 2.0, "duration": 4.226370096206665, "step": 500}
+{"episode_reward": 47.90708282459485, "episode": 3.0, "duration": 4.598872423171997, "step": 750}
+{"episode_reward": 38.63907285442818, "episode": 4.0, "duration": 4.3697662353515625, "step": 1000}
+{"episode_reward": 45.82305356218897, "episode": 5.0, "batch_reward": 0.20681545279138655, "critic_loss": 0.6196005040104147, "critic_fm_loss": 0.034166241607556665, "actor_loss": -3.676560266672557, "alpha_loss": 0.8968824328476848, "alpha_value": 0.0947122590821833, "inv_inv_loss": 0.19926789307178022, "duration": 278.4365210533142, "step": 1250}
