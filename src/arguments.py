@@ -12,6 +12,9 @@ def parse_args():
 	parser.add_argument('--action_repeat', default=4, type=int)
 	parser.add_argument('--episode_length', default=1000, type=int)
 	parser.add_argument('--mode', default='train', type=str)
+
+	# Replay Buffer
+	parser.add_argument('--replaybuffer_size', default=-1, type=int)
 	
 	# agent
 	parser.add_argument('--init_steps', default=1000, type=int)
@@ -52,6 +55,7 @@ def parse_args():
 	parser.add_argument('--save_augpics_freq', default=1000, type=int) # Used during training
 	# Self-Supervision for Neural Augs
 	parser.add_argument('--use_feature_matching', default=False, action='store_true')
+	parser.add_argument('--drq', default=False, action='store_true')
 
 	# self-supervision
 	parser.add_argument('--use_rot', default=False, action='store_true') # rotation prediction

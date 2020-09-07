@@ -50,11 +50,10 @@ class ReplayBuffer(object):
     def __init__(self, obs_shape, action_shape, capacity, batch_size, 
         neural_aug_type, neural_aug_skip_prob, neural_aug_average_over, 
         neural_aug_start_iter, neural_aug_warmup_iters, 
-        save_augpics, save_augpics_freq, save_augpics_dir, use_feature_matching
+        save_augpics, save_augpics_freq, save_augpics_dir, use_feature_matching, drq
     ):
         self.capacity = capacity
         self.batch_size = batch_size
-        self.use_feature_matching = use_feature_matching
 
         # the proprioceptive obs is stored as float32, pixels obs as uint8
         obs_dtype = np.float32 if len(obs_shape) == 1 else np.uint8
@@ -64,7 +63,8 @@ class ReplayBuffer(object):
         self.actions = np.empty((capacity, *action_shape), dtype=np.float32)
         self.rewards = np.empty((capacity, 1), dtype=np.float32)
         self.not_dones = np.empty((capacity, 1), dtype=np.float32)
-        if self.use_feature_matching:
+        self.output_second_obses = use_feature_matching or drq
+        if self.output_second_obses:
             self.obses_FM = np.empty((capacity, *obs_shape), dtype=obs_dtype)
 
         # Neural Augmentations
@@ -122,7 +122,7 @@ class ReplayBuffer(object):
                     copies=self.neural_aug_average_over
                 ).cpu().numpy() * 255.0).astype(np.uint8)
 
-        if self.use_feature_matching:
+        if self.output_second_obses:
             # Always have an FM version of the obses
             obses_FM = (
                 call_augfn_torch_batched(
@@ -150,7 +150,7 @@ class ReplayBuffer(object):
                 print(actions)
                 exit()
 
-        if self.use_feature_matching:
+        if self.output_second_obses:
             for i, (O, A, R, N, D, OFM) in enumerate(zip(obses, actions, rewards, next_obses, dones, obses_FM)):
                 np.copyto(self.obses[self.idx + i], O)
                 np.copyto(self.actions[self.idx + i], A)
@@ -183,7 +183,7 @@ class ReplayBuffer(object):
         obses = random_crop(obses)
         next_obses = random_crop(next_obses)
 
-        if self.use_feature_matching:
+        if self.output_second_obses:
             obses = (obses, torch.as_tensor(self.obses_FM[idxs]).float().cuda())
 
         return obses, actions, rewards, next_obses, not_dones
@@ -208,7 +208,7 @@ class ReplayBuffer(object):
         curl_kwargs = dict(obs_anchor=obses, obs_pos=pos,
                           time_anchor=None, time_pos=None)
 
-        if self.use_feature_matching:
+        if self.output_second_obses:
             obses = (obses, torch.as_tensor(self.obses_FM[idxs]).float().cuda())
 
         return obses, actions, rewards, next_obses, not_dones, curl_kwargs

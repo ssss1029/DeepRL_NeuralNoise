@@ -48,10 +48,11 @@ def main(args):
 
 	# Prepare agent
 	assert torch.cuda.is_available(), 'must have cuda enabled'
+	capacity = args.train_steps if args.replaybuffer_size == -1 else args.replaybuffer_size
 	replay_buffer = utils.ReplayBuffer(
 		obs_shape=env.observation_space.shape,
 		action_shape=env.action_space.shape,
-		capacity=args.train_steps // 3 * 2 if args.use_feature_matching else args.train_steps,
+		capacity=capacity // 3 * 2 if (args.use_feature_matching or args.drq) else capacity,
 		batch_size=args.batch_size,
 		neural_aug_type=args.neural_aug_type,
 		neural_aug_skip_prob=args.neural_aug_skip_prob,
@@ -61,7 +62,8 @@ def main(args):
 		save_augpics=args.save_augpics,
 		save_augpics_freq=args.save_augpics_freq, 
 		save_augpics_dir=args.work_dir,
-		use_feature_matching=args.use_feature_matching
+		use_feature_matching=args.use_feature_matching,
+		drq=args.drq
 	)
 	cropped_obs_shape = (3*args.frame_stack, 84, 84)
 	agent = make_agent(

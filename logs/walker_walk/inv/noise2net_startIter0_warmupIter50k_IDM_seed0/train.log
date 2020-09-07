@@ -1,5 +1,7 @@
-{"episode_reward": 0.0, "episode": 1.0, "duration": 21.979520320892334, "step": 250}
-{"episode_reward": 72.83316014594917, "episode": 2.0, "duration": 4.226370096206665, "step": 500}
-{"episode_reward": 47.90708282459485, "episode": 3.0, "duration": 4.598872423171997, "step": 750}
-{"episode_reward": 38.63907285442818, "episode": 4.0, "duration": 4.3697662353515625, "step": 1000}
-{"episode_reward": 45.82305356218897, "episode": 5.0, "batch_reward": 0.20681545279138655, "critic_loss": 0.6196005040104147, "critic_fm_loss": 0.034166241607556665, "actor_loss": -3.676560266672557, "alpha_loss": 0.8968824328476848, "alpha_value": 0.0947122590821833, "inv_inv_loss": 0.19926789307178022, "duration": 278.4365210533142, "step": 1250}
+{"episode_reward": 0.0, "episode": 1.0, "duration": 22.81766176223755, "step": 250}
+{"episode_reward": 72.83316014594917, "episode": 2.0, "duration": 3.584489345550537, "step": 500}
+{"episode_reward": 47.90708282459485, "episode": 3.0, "duration": 3.6553897857666016, "step": 750}
+{"episode_reward": 38.63907285442818, "episode": 4.0, "duration": 3.9148879051208496, "step": 1000}
+{"episode_reward": 45.82305356218897, "episode": 5.0, "batch_reward": 0.20686679693152182, "critic_loss": 0.5267826431185556, "actor_loss": -3.7817357843244626, "alpha_loss": 0.896106041013346, "alpha_value": 0.09471914188744122, "inv_inv_loss": 0.1813661967954363, "duration": 231.12212657928467, "step": 1250}
+{"episode_reward": 67.13008981029172, "episode": 6.0, "batch_reward": 0.21452155870199202, "critic_loss": 1.0841116417646408, "actor_loss": -6.32050276184082, "alpha_loss": 0.8065511646270752, "alpha_value": 0.08939318656921387, "inv_inv_loss": 0.07308845645189285, "duration": 34.85305213928223, "step": 1500}
+{"episode_reward": 49.12551060906508, "episode": 7.0, "batch_reward": 0.21905727416276932, "critic_loss": 1.0303714956045151, "actor_loss": -6.770247932434082, "alpha_loss": 0.8185316424369812, "alpha_value": 0.08835242867469788, "inv_inv_loss": 0.07927589231729508, "duration": 34.01119899749756, "step": 1750}

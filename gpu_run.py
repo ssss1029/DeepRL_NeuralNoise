@@ -56,46 +56,76 @@ class Config:
         #         --neural_aug_type=noise2net \
         #         --use_feature_matching",
 
+        # "walker_walk_inv_noise2net_startIter0_warmupIter50k_IDM_seed0" : "python3 src/train.py \
+        #         --domain_name walker \
+        #         --task_name walk \
+        #         --action_repeat 4 \
+        #         --mode train \
+        #         --num_shared_layers 8 \
+        #         --seed 0 \
+        #         --work_dir logs/walker_walk/inv/noise2net_startIter0_warmupIter50k_IDM_seed0 \
+        #         --save_model \
+        #         --neural_aug_start_iter=0 \
+        #         --neural_aug_warmup_iters=50000 \
+        #         --save_augpics_freq=5000 \
+        #         --neural_aug_type=noise2net \
+        #         --use_inv",
+
+        # "walker_walk_noSS_noise2net_startIter150k_warmupIter0_RBSize200k_seed0" : "python3 src/train.py \
+        #     --domain_name walker \
+        #     --task_name walk \
+        #     --action_repeat 4 \
+        #     --mode train \
+        #     --num_shared_layers 8 \
+        #     --seed 0 \
+        #     --work_dir logs/walker_walk/noSS/noise2net_startIter150k_warmupIter0_RBSize200k_seed0 \
+        #     --save_model \
+        #     --neural_aug_start_iter=150000 \
+        #     --neural_aug_warmup_iters=1 \
+        #     --save_augpics_freq=5000 \
+        #     --replaybuffer_size=200000 \
+        #     --neural_aug_type=noise2net",
+
         #####################################################################################
         #### SMAUG
         #####################################################################################
         
-        "cartpole_balance_noSS_noise2net_startIter0_warmupIter50k_seed2" : "python3 src/train.py \
+        "cartpole_balance_noSS_noise2net_startIter0_warmupIter50k_seed3" : "python3 src/train.py \
             --domain_name cartpole \
             --task_name balance \
             --action_repeat 8 \
             --mode train \
             --num_shared_layers 8 \
-            --seed 2 \
-            --work_dir logs/cartpole_balance/noSS/noise2net_startIter0_warmupIter50k_seed2 \
+            --seed 3 \
+            --work_dir logs/cartpole_balance/noSS/noise2net_startIter0_warmupIter50k_seed3 \
             --save_model \
             --neural_aug_start_iter=0 \
             --neural_aug_warmup_iters=50000 \
             --save_augpics_freq=10101 \
             --neural_aug_type=noise2net",
 
-        "finger_spin_noSS_noise2net_startIter0_warmupIter50k_seed2" : "python3 src/train.py \
+        "finger_spin_noSS_noise2net_startIter0_warmupIter50k_seed3" : "python3 src/train.py \
             --domain_name finger \
             --task_name spin \
             --action_repeat 2 \
             --mode train \
             --num_shared_layers 8 \
-            --seed 2 \
-            --work_dir logs/finger_spin/noSS/noise2net_startIter0_warmupIter50k_seed2 \
+            --seed 3 \
+            --work_dir logs/finger_spin/noSS/noise2net_startIter0_warmupIter50k_seed3 \
             --save_model \
             --neural_aug_start_iter=0 \
             --neural_aug_warmup_iters=50000 \
             --save_augpics_freq=10101 \
             --neural_aug_type=noise2net",
 
-        "walker_stand_noSS_noise2net_startIter0_warmupIter50k_seed2" : "python3 src/train.py \
+        "walker_stand_noSS_noise2net_startIter0_warmupIter50k_seed3" : "python3 src/train.py \
             --domain_name walker \
             --task_name stand \
             --action_repeat 4 \
             --mode train \
             --num_shared_layers 8 \
-            --seed 2 \
-            --work_dir logs/walker_stand/noSS/noise2net_startIter0_warmupIter50k_seed2 \
+            --seed 3 \
+            --work_dir logs/walker_stand/noSS/noise2net_startIter0_warmupIter50k_seed3 \
             --save_model \
             --neural_aug_start_iter=0 \
             --neural_aug_warmup_iters=50000 \

@@ -40,6 +40,7 @@ def make_agent(obs_shape, action_shape, args):
         num_filters=args.num_filters,
         curl_latent_dim=args.curl_latent_dim,
         use_feature_matching=args.use_feature_matching,
+        drq=args.drq
     )
 
 
@@ -280,7 +281,8 @@ class SacSSAgent(object):
         num_shared_layers=4,
         num_filters=32,
         curl_latent_dim=128,
-        use_feature_matching=False
+        use_feature_matching=False,
+        drq=False
     ):
         self.discount = discount
         self.critic_tau = critic_tau
@@ -293,6 +295,7 @@ class SacSSAgent(object):
         self.use_curl = use_curl
         self.curl_latent_dim = curl_latent_dim
         self.use_feature_matching = use_feature_matching
+        self.drq = drq
 
         assert num_layers >= num_shared_layers, 'num shared layers cannot exceed total amount'
 
@@ -432,9 +435,16 @@ class SacSSAgent(object):
             target_Q = reward + (not_done * self.discount * target_V)
 
         # get current Q estimates
-        current_Q1, current_Q2 = self.critic(obs, action)
+        if self.drq:
+            current_Q1_1, current_Q2_1 = self.critic(obs, action)
+            current_Q1_2, current_Q2_2 = self.critic(obs_fm, action)
+            current_Q1 = (current_Q1_1 + current_Q1_2) / 2.0
+            current_Q2 = (current_Q2_1 + current_Q2_2) / 2.0
+        else:
+            current_Q1, current_Q2 = self.critic(obs, action)
+
         critic_loss = F.mse_loss(current_Q1,
-                                 target_Q) + F.mse_loss(current_Q2, target_Q)
+                                target_Q) + F.mse_loss(current_Q2, target_Q)
         
         L.log('train_critic/loss', critic_loss, step)
 
@@ -553,7 +563,7 @@ class SacSSAgent(object):
         else:
             obs, action, reward, next_obs, not_done = replay_buffer.sample()
         
-        if self.use_feature_matching:
+        if self.use_feature_matching or self.drq:
             obs, obs_fm = obs
         else:
             obs, obs_fm = obs, None
