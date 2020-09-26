@@ -55,6 +55,7 @@ def main(args):
 		capacity=capacity // 3 * 2 if (args.use_feature_matching or args.drq) else capacity,
 		batch_size=args.batch_size,
 		neural_aug_type=args.neural_aug_type,
+		neural_aug_max_eps=args.neural_aug_max_eps
 		neural_aug_skip_prob=args.neural_aug_skip_prob,
 		neural_aug_average_over=args.neural_aug_average_over,
 		neural_aug_start_iter=args.neural_aug_start_iter,

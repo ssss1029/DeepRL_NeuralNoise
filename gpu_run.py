@@ -27,6 +27,8 @@ class Config:
         #### SHADOWFAX
         #####################################################################################
 
+        # Finished Running
+
         # "cartpole_swingup_noSS_noise2net_startIter0_warmupIter50k_seed3" : "python3 src/train.py \
         #     --domain_name cartpole \
         #     --task_name swingup \
@@ -57,34 +59,130 @@ class Config:
         #     --save_augpics_freq 10101 \
         #     --neural_aug_type noise2net",
 
-        "cartpole_swingup_noSS_noise2net_startIter0_warmupIter50k_seed2" : "python3 src/train.py \
-            --domain_name cartpole \
-            --task_name swingup \
-            --replaybuffer_size 200000 \
-            --action_repeat 8 \
-            --mode train \
-            --num_shared_layers 8 \
-            --seed 2 \
-            --work_dir logs/cartpole_swingup/noSS/replaybuffer_size_200000_noise2net_startIter0_warmupIter50k_seed2 \
-            --save_model \
-            --neural_aug_start_iter 0 \
-            --neural_aug_warmup_iters 50000 \
-            --save_augpics_freq 10101 \
-            --neural_aug_type noise2net",
+        # "cartpole_swingup_noSS_noise2net_startIter0_warmupIter50k_seed2" : "python3 src/train.py \
+        #     --domain_name cartpole \
+        #     --task_name swingup \
+        #     --replaybuffer_size 200000 \
+        #     --action_repeat 8 \
+        #     --mode train \
+        #     --num_shared_layers 8 \
+        #     --seed 2 \
+        #     --work_dir logs/cartpole_swingup/noSS/replaybuffer_size_200000_noise2net_startIter0_warmupIter50k_seed2 \
+        #     --save_model \
+        #     --neural_aug_start_iter 0 \
+        #     --neural_aug_warmup_iters 50000 \
+        #     --save_augpics_freq 10101 \
+        #     --neural_aug_type noise2net",
 
-        "ball_in_cup_catch_noSS_noise2net_startIter0_warmupIter50k_seed2" : "python3 src/train.py \
+        # "ball_in_cup_catch_noSS_noise2net_startIter0_warmupIter50k_seed2" : "python3 src/train.py \
+        #     --domain_name ball_in_cup \
+        #     --task_name catch \
+        #     --replaybuffer_size 200000 \
+        #     --action_repeat 4 \
+        #     --mode train \
+        #     --num_shared_layers 8 \
+        #     --seed 2 \
+        #     --work_dir logs/ball_in_cup_catch/noSS/replaybuffer_size_200000_noise2net_startIter0_warmupIter50k_seed2 \
+        #     --save_model \
+        #     --neural_aug_start_iter 0 \
+        #     --neural_aug_warmup_iters 50000 \
+        #     --save_augpics_freq 10101 \
+        #     --neural_aug_type noise2net",
+
+        # "cartpole_swingup_noSS_noise2net_startIter0_warmupIter50k_seed3_REAL" : "python3 src/train.py \
+        #     --domain_name cartpole \
+        #     --task_name swingup \
+        #     --replaybuffer_size 200000 \
+        #     --action_repeat 8 \
+        #     --mode train \
+        #     --num_shared_layers 8 \
+        #     --seed 3 \
+        #     --work_dir logs/cartpole_swingup/noSS/replaybuffer_size_200000_noise2net_startIter0_warmupIter50k_seed3 \
+        #     --save_model \
+        #     --neural_aug_start_iter 0 \
+        #     --neural_aug_warmup_iters 50000 \
+        #     --save_augpics_freq 10101 \
+        #     --neural_aug_type noise2net",
+
+        # "ball_in_cup_catch_noSS_noise2net_startIter0_warmupIter50k_seed3_REAL" : "python3 src/train.py \
+        #     --domain_name ball_in_cup \
+        #     --task_name catch \
+        #     --replaybuffer_size 200000 \
+        #     --action_repeat 4 \
+        #     --mode train \
+        #     --num_shared_layers 8 \
+        #     --seed 3 \
+        #     --work_dir logs/ball_in_cup_catch/noSS/replaybuffer_size_200000_noise2net_startIter0_warmupIter50k_seed3 \
+        #     --save_model \
+        #     --neural_aug_start_iter 0 \
+        #     --neural_aug_warmup_iters 50000 \
+        #     --save_augpics_freq 10101 \
+        #     --neural_aug_type noise2net",
+
+        # neural_aug_warmup_iters 0 and max_eps = 0.20
+
+        # "ball_in_cup_catch_noSS_noise2net_startIter0_warmupIter0_seed3_REAL" : "python3 src/train.py \
+        #     --domain_name ball_in_cup \
+        #     --task_name catch \
+        #     --replaybuffer_size 200000 \
+        #     --action_repeat 4 \
+        #     --mode train \
+        #     --num_shared_layers 8 \
+        #     --seed 3 \
+        #     --work_dir logs/ball_in_cup_catch/noSS/replaybuffer_size_200000_noise2net_startIter0_warmupIter0_seed3 \
+        #     --save_model \
+        #     --neural_aug_start_iter 0 \
+        #     --neural_aug_warmup_iters 0 \
+        #     --save_augpics_freq 10101 \
+        #     --neural_aug_type noise2net",
+
+        # "cartpole_swingup_noSS_noise2net_startIter0_warmupIter0_seed3_REAL" : "python3 src/train.py \
+        #     --domain_name cartpole \
+        #     --task_name swingup \
+        #     --replaybuffer_size 200000 \
+        #     --action_repeat 8 \
+        #     --mode train \
+        #     --num_shared_layers 8 \
+        #     --seed 3 \
+        #     --work_dir logs/cartpole_swingup/noSS/replaybuffer_size_200000_noise2net_startIter0_warmupIter0_seed3 \
+        #     --save_model \
+        #     --neural_aug_start_iter 0 \
+        #     --neural_aug_warmup_iters 0 \
+        #     --save_augpics_freq 10101 \
+        #     --neural_aug_type noise2net",
+
+        # Currently Running
+
+        "ball_in_cup_catch_noSS_noise2net_maxEps25e-2_startIter0_warmupIter0_seed3" : "python3 src/train.py \
             --domain_name ball_in_cup \
             --task_name catch \
             --replaybuffer_size 200000 \
             --action_repeat 4 \
             --mode train \
             --num_shared_layers 8 \
-            --seed 2 \
-            --work_dir logs/ball_in_cup_catch/noSS/replaybuffer_size_200000_noise2net_startIter0_warmupIter50k_seed2 \
+            --seed 3 \
+            --work_dir logs/ball_in_cup_catch/noSS/replaybuffer_size_200000_noise2net_maxEps25e-2_startIter0_warmupIter0_seed3 \
             --save_model \
             --neural_aug_start_iter 0 \
-            --neural_aug_warmup_iters 50000 \
+            --neural_aug_warmup_iters 0 \
             --save_augpics_freq 10101 \
+            --neural_aug_max_eps 0.25 \
+            --neural_aug_type noise2net",
+
+        "cartpole_swingup_noSS_noise2net_maxEps25e-2_startIter0_warmupIter0_seed3" : "python3 src/train.py \
+            --domain_name cartpole \
+            --task_name swingup \
+            --replaybuffer_size 200000 \
+            --action_repeat 8 \
+            --mode train \
+            --num_shared_layers 8 \
+            --seed 3 \
+            --work_dir logs/cartpole_swingup/noSS/replaybuffer_size_200000_noise2net_maxEps25e-2_startIter0_warmupIter0_seed3 \
+            --save_model \
+            --neural_aug_start_iter 0 \
+            --neural_aug_warmup_iters 0 \
+            --save_augpics_freq 10101 \
+            --neural_aug_max_eps 0.25 \
             --neural_aug_type noise2net",
 
         #####################################################################################
@@ -96,7 +194,7 @@ class Config:
     # Time to wait between putting jobs on GPUs (in seconds). This is useful because it might take time 
     # for a process to actually load the network onto the GPU, so we wait until that is done before 
     # selecting the GPU for the next process.
-    SLEEP_TIME = 10
+    SLEEP_TIME = 30
 
     # Minimum memory required on a GPU to consider putting a job on it (MiB).
     MIN_MEMORY_REQUIRED = 4000

@@ -48,7 +48,7 @@ def make_dir(dir_path):
 class ReplayBuffer(object):
     """Buffer to store environment transitions"""
     def __init__(self, obs_shape, action_shape, capacity, batch_size, 
-        neural_aug_type, neural_aug_skip_prob, neural_aug_average_over, 
+        neural_aug_type, neural_aug_max_eps, neural_aug_skip_prob, neural_aug_average_over, 
         neural_aug_start_iter, neural_aug_warmup_iters, 
         save_augpics, save_augpics_freq, save_augpics_dir, use_feature_matching, drq
     ):
@@ -79,7 +79,7 @@ class ReplayBuffer(object):
         self.save_augpics_freq = save_augpics_freq 
         self.save_augpics_dir = save_augpics_dir
 
-        self.noise2net_MAX_EPS = 0.15 # TODO: Add command line arg
+        self.noise2net_MAX_EPS = neural_aug_max_eps
         self.noise2net = Res2Net(epsilon=self.noise2net_MAX_EPS, batch_size=3).train().cuda() # Multiply by 3 because frame_stack
 
         self.idx = 0
@@ -98,17 +98,21 @@ class ReplayBuffer(object):
         obses = [obs for _ in range(self.neural_aug_average_over)]
         next_obses = [next_obs for _ in range(self.neural_aug_average_over)]
 
-        if self.idx > self.neural_aug_start_iter:
+        if self.idx >= self.neural_aug_start_iter:
             if self.neural_aug_type == 'noise2net' and random.random() > self.neural_aug_skip_prob:
                 # Apply noise2net
                 self.noise2net.reload_parameters()
                 
                 # Linear epsilon warmup
-                warmup_frac = (self.idx - self.neural_aug_start_iter)/self.neural_aug_warmup_iters
+                if self.neural_aug_warmup_iters == 0:
+                    warmup_frac = 100.0 # Say we are done warming up
+                else:
+                    warmup_frac = (self.idx - self.neural_aug_start_iter)/self.neural_aug_warmup_iters
+
                 if warmup_frac < 1.0:
                     eps = self.noise2net_MAX_EPS * warmup_frac
                 else:
-                    eps = random.uniform(0, self.noise2net_MAX_EPS)
+                    eps = random.uniform(self.noise2net_MAX_EPS / 2.0, self.noise2net_MAX_EPS)
                 self.noise2net.set_epsilon(eps)
 
                 obses = (call_augfn_torch_batched(
@@ -147,6 +151,7 @@ class ReplayBuffer(object):
 
             if self.save_augpics:
                 # Legacy flag
+                print("EPSILON = ", self.noise2net.epsilon)
                 print(actions)
                 exit()
 
